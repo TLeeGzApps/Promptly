@@ -1,4 +1,4 @@
-import { Sidebar, SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { Sidebar, SidebarProvider, SidebarInset, SidebarRail } from "@/components/ui/sidebar";
 import { SidebarHeader } from "@/components/layout/sidebar-header";
 import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { MainHeader } from "@/components/layout/main-header";
@@ -10,10 +10,11 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
-      <Sidebar>
+    <SidebarProvider defaultOpen={false}>
+      <Sidebar collapsible="icon">
         <SidebarHeader />
         <SidebarNav />
+        <SidebarRail />
       </Sidebar>
       <SidebarInset>
         <MainHeader />
