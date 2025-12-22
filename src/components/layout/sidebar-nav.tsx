@@ -31,10 +31,10 @@ export function SidebarNav() {
               isActive={pathname === item.href}
               tooltip={item.tooltip}
             >
-              <>
+              <div>
                 <item.icon />
                 <span>{item.label}</span>
-              </>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
