@@ -19,9 +19,6 @@ const footerSections = [
     links: [
       { name: 'Documentation', href: '#' },
       { name: 'Prompt Engineering Guides', href: '#' },
-      { name: 'Blog / Insights', href: '#' },
-      { name: 'Examples Gallery', href: '#' },
-      { name: 'Community (Coming Soon)', href: '#' },
       { name: 'Support Center', href: '#' },
     ],
   },
