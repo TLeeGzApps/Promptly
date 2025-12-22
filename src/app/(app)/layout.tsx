@@ -1,0 +1,25 @@
+import { Sidebar, SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarHeader } from "@/components/layout/sidebar-header";
+import { SidebarNav } from "@/components/layout/sidebar-nav";
+import { MainHeader } from "@/components/layout/main-header";
+
+export default function AppLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <SidebarProvider>
+      <Sidebar>
+        <SidebarHeader />
+        <SidebarNav />
+      </Sidebar>
+      <SidebarInset>
+        <MainHeader />
+        <main className="flex-1 p-4 md:p-6 lg:p-8">
+            {children}
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
+  );
+}
