@@ -32,10 +32,7 @@ import { PromptAnalysis } from '@/components/prompt-analysis';
 
 const formSchema = z.object({
   goal: z.string().min(1, 'Goal is required.'),
-  role: z.string().optional(),
   constraints: z.array(z.object({ value: z.string() })).optional(),
-  examples: z.array(z.object({ input: z.string(), output: z.string() })).optional(),
-  outputFormat: z.string().optional(),
   model: z.string().min(1, 'Model is required.'),
 });
 
@@ -49,10 +46,7 @@ export default function GeneratePage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       goal: '',
-      role: '',
       constraints: [{ value: '' }],
-      examples: [{ input: '', output: '' }],
-      outputFormat: 'Markdown',
       model: 'gemini-2.5-flash',
     },
   });
@@ -66,29 +60,14 @@ export default function GeneratePage() {
     name: 'constraints',
   });
 
-  const {
-    fields: exampleFields,
-    append: appendExample,
-    remove: removeExample,
-  } = useFieldArray({
-    control: form.control,
-    name: 'examples',
-  });
-
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     setGeneratedPrompt('');
 
     let description = `Goal: ${data.goal}\n`;
-    if (data.role) description += `Role: As a ${data.role}\n`;
-    if (data.outputFormat) description += `Output Format: ${data.outputFormat}\n`;
     if (data.constraints && data.constraints.some(c => c.value)) {
       description += "Constraints:\n";
       data.constraints.forEach(c => c.value && (description += `- ${c.value}\n`));
-    }
-    if (data.examples && data.examples.some(e => e.input && e.output)) {
-      description += "Few-shot Examples:\n";
-      data.examples.forEach(e => e.input && e.output && (description += `  - Input: ${e.input}\n    Output: ${e.output}\n`));
     }
 
     try {
@@ -153,44 +132,6 @@ export default function GeneratePage() {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="role"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>AI Role / Persona</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., a witty marketing expert" {...field} />
-                      </FormControl>
-                      <FormDescription>Define the persona the AI should adopt.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="outputFormat"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Output Format</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an output format" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Markdown">Markdown</SelectItem>
-                          <SelectItem value="JSON">JSON</SelectItem>
-                           <SelectItem value="Plain Text">Plain Text</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <Separator />
 
                 <div>
@@ -210,7 +151,7 @@ export default function GeneratePage() {
                             </FormItem>
                           )}
                         />
-                      <Button type="button" variant="ghost" size="icon" onClick={() => removeConstraint(index)} disabled={constraintFields.length <= 1}>
+                      <Button type="button" variant="ghost" size="icon" onClick={() => removeConstraint(index)} disabled={constraintFields.length <= 1 && form.getValues('constraints.0.value') === ''}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -219,50 +160,6 @@ export default function GeneratePage() {
                    <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => appendConstraint({ value: '' })}>
                       <PlusCircle className="mr-2 h-4 w-4" />
                       Add Constraint
-                    </Button>
-                </div>
-                
-                <Separator />
-                
-                <div>
-                   <FormLabel>Few-shot Examples</FormLabel>
-                  <FormDescription className="mb-2">Provide input/output pairs to guide the model.</FormDescription>
-                  <div className="space-y-4">
-                  {exampleFields.map((field, index) => (
-                    <div key={field.id} className="relative rounded-md border p-4 pr-10">
-                        <FormField
-                          control={form.control}
-                          name={`examples.${index}.input`}
-                          render={({ field }) => (
-                            <FormItem className="mb-2">
-                              <FormLabel className="text-xs">Example Input</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Product: SuperWidget" {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                         <FormField
-                          control={form.control}
-                          name={`examples.${index}.output`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-xs">Example Output</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Email: Announcing the SuperWidget..." {...field} />
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-1" onClick={() => removeExample(index)} disabled={exampleFields.length <= 1}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  </div>
-                   <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => appendExample({ input: '', output: '' })}>
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Add Example
                     </Button>
                 </div>
 
