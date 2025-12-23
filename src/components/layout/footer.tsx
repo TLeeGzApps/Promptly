@@ -8,7 +8,6 @@ const footerSections = [
         { name: 'Generate', href: '/generate' },
         { name: 'Convert', href: '/convert' },
         { name: 'Translate', href: '/translate' },
-        { name: 'Paraphrase', href: '/paraphrase' },
         { name: 'Library', href: '/prompt-library' },
         { name: 'Pricing', href: '/pricing' },
     ],

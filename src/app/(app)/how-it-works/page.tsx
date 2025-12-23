@@ -1,6 +1,6 @@
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BotMessageSquare, Blocks, Languages, Replace, Zap } from 'lucide-react';
+import { BotMessageSquare, Blocks, Languages, Zap } from 'lucide-react';
 
 const features = [
   {
@@ -18,14 +18,9 @@ const features = [
     title: '3. Translate Between Models',
     description: 'Seamlessly translate prompts between different AI models like Gemini, GPT-4, and Claude. Our system preserves your intent while adapting the syntax and conventions for the target model.',
   },
-    {
-    icon: <Replace className="h-8 w-8 text-primary" />,
-    title: '4. Paraphrase and Refine',
-    description: 'Adapt your existing text for different complexities and lengths. Choose from Basic, Advanced, or Complex modes to get the perfect variation while preserving the original tone.',
-    },
   {
     icon: <Zap className="h-8 w-8 text-primary" />,
-    title: '5. Analyze and Score',
+    title: '4. Analyze and Score',
     description: 'Every generated or translated prompt comes with a detailed analysis. Get a quality score (0-100) and actionable feedback to improve clarity, efficiency, and model compatibility.',
   },
 ];
