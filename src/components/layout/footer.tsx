@@ -1,5 +1,7 @@
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const footerSections = [
     {
@@ -34,10 +36,21 @@ const footerSections = [
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const footerImage = PlaceHolderImages.find(img => img.id === 'hero-background');
+
 
   return (
-    <footer className="border-t bg-background">
-      <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
+    <footer className="relative border-t bg-background">
+        {footerImage && (
+            <Image
+                src={footerImage.imageUrl}
+                alt={footerImage.description}
+                fill
+                className="object-cover opacity-60"
+                data-ai-hint={footerImage.imageHint}
+            />
+        )}
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           <div className="lg:col-span-3">
              <Link href="/generate" className="flex items-center gap-2.5">

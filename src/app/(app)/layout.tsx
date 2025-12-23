@@ -18,7 +18,7 @@ export default function AppLayout({
       </Sidebar>
       <SidebarInset>
         <MainHeader />
-        <main className="flex-1 p-4 md:p-6 lg:p-8">
+        <main className="flex-1 bg-card/75 p-4 md:p-6 lg:p-8">
             {children}
         </main>
         <Footer />
