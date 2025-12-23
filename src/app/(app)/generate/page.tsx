@@ -208,7 +208,7 @@ export default function GeneratePage() {
                   </div>
                 )}
                 {generatedPrompt && (
-                  <pre className="mt-2 rounded-md bg-background p-4 font-code text-sm text-foreground overflow-x-auto">
+                  <pre className="mt-2 rounded-md bg-background p-4 font-code text-sm text-foreground overflow-x-auto whitespace-pre-wrap">
                     <code>{generatedPrompt}</code>
                   </pre>
                 )}
