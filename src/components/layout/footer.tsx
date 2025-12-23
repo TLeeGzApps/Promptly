@@ -7,11 +7,7 @@ const footerSections = [
     links: [
       { name: 'How It Works', href: '/how-it-works' },
       { name: 'Models Supported', href: '/models-supported' },
-      { name: 'Prompt Templates', href: '/generate' },
-      { name: 'Prompt Scoring', href: '#' },
-      { name: 'Version History', href: '#' },
       { name: 'API (Coming Soon)', href: '#' },
-      { name: 'Changelog', href: '#' },
     ],
   },
   {
