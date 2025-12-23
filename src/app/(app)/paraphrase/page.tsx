@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Copy, Check } from 'lucide-react';
+import { Loader2, Copy } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { PromptAnalysis } from '@/components/prompt-analysis';
@@ -64,8 +64,6 @@ export default function ParaphrasePage() {
       setIsLoading(false);
     }
   };
-  
-  const sourceTextValue = form.watch('sourceText');
 
   return (
     <>
@@ -74,10 +72,35 @@ export default function ParaphrasePage() {
         description="Adapt your text with different complexity and length while preserving tone."
       />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <Card>
-            <CardContent className="p-6 space-y-6">
-               <div className="grid gap-6 md:grid-cols-2">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <div className="grid gap-8 lg:grid-cols-2">
+            {/* Left Column: Original Text & Controls */}
+            <div className="space-y-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="font-headline">Original Text</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <FormField
+                    control={form.control}
+                    name="sourceText"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Enter the text you want to paraphrase..."
+                            className="min-h-[250px] font-code"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              <div className="grid grid-cols-2 gap-8">
                  <FormField
                   control={form.control}
                   name="mode"
@@ -139,38 +162,9 @@ export default function ParaphrasePage() {
                   )}
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Paraphrase Text
-              </Button>
-            </CardContent>
-          </Card>
-          
-          <div className="grid gap-8 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-headline">Original Text</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <FormField
-                  control={form.control}
-                  name="sourceText"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Enter the text you want to paraphrase..."
-                          className="min-h-[250px] font-code"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
+            </div>
 
+            {/* Right Column: Paraphrased Text */}
             <Card>
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -185,25 +179,31 @@ export default function ParaphrasePage() {
               </CardHeader>
               <CardContent>
                 {isLoading && (
-                  <div className="flex items-center justify-center min-h-[250px]">
+                  <div className="flex items-center justify-center min-h-[400px]">
                     <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                   </div>
                 )}
                 {paraphrasedText && (
-                  <pre className="min-h-[250px] mt-2 rounded-md bg-background p-4 font-code text-sm text-foreground overflow-x-auto whitespace-pre-wrap">
+                  <pre className="min-h-[400px] mt-2 rounded-md bg-background p-4 font-code text-sm text-foreground overflow-x-auto whitespace-pre-wrap">
                     <code>{paraphrasedText}</code>
                   </pre>
                 )}
                 {!isLoading && !paraphrasedText && (
-                  <p className="text-center text-sm text-muted-foreground min-h-[250px] flex items-center justify-center">
+                  <div className="text-center text-sm text-muted-foreground min-h-[400px] flex items-center justify-center rounded-lg border-2 border-dashed p-8">
                     Your paraphrased text will appear here.
-                  </p>
+                  </div>
                 )}
               </CardContent>
             </Card>
           </div>
+          
+          <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Paraphrase Text
+          </Button>
         </form>
       </Form>
+      
       {paraphrasedText && (
         <div className="mt-8">
             <PromptAnalysis promptText={paraphrasedText} />
