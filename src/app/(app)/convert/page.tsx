@@ -17,9 +17,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
-import { generateInitialPrompt } from '@/ai/flows/generate-initial-prompt';
 import { PromptAnalysis } from '@/components/prompt-analysis';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { convertTextToPrompt } from '@/ai/flows/convert-text-to-prompt';
 
 const formSchema = z.object({
   intent: z.string().min(10, 'Please describe your intent in at least 10 characters.'),
@@ -44,11 +44,12 @@ export default function ConvertPage() {
     setIsLoading(true);
     setGeneratedPrompt('');
 
-    const description = `Transform the following plain-text intent into a structured, model-specific prompt for the ${data.model} model. The prompt should include an explicit role, task definition, constraints, and output formatting.\n\nIntent: "${data.intent}"`;
-
     try {
-      const result = await generateInitialPrompt({ description });
-      setGeneratedPrompt(result.prompt);
+      const result = await convertTextToPrompt({ 
+        intent: data.intent,
+        model: data.model 
+      });
+      setGeneratedPrompt(result.structuredPrompt);
     } catch (error) {
       console.error('Error generating prompt:', error);
     } finally {
@@ -130,7 +131,7 @@ export default function ConvertPage() {
                 </div>
               )}
               {generatedPrompt && (
-                <pre className="mt-2 rounded-md bg-background p-4 font-code text-sm text-foreground overflow-x-auto">
+                <pre className="mt-2 rounded-md bg-background p-4 font-code text-sm text-foreground overflow-x-auto whitespace-pre-wrap">
                   <code>{generatedPrompt}</code>
                 </pre>
               )}
