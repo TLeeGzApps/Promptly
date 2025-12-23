@@ -9,6 +9,7 @@ import {
 import { BotMessageSquare, Blocks, Languages, Replace } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from 'react';
+import Link from "next/link";
 
 const navItems = [
   { href: "/generate", icon: BotMessageSquare, label: "Generate Prompt", tooltip: "Generate" },
@@ -26,15 +27,14 @@ export function SidebarNav() {
         {navItems.map((item) => (
           <SidebarMenuItem key={item.href}>
             <SidebarMenuButton
-              href={item.href}
               asChild
               isActive={pathname === item.href}
               tooltip={item.tooltip}
             >
-              <div>
+              <Link href={item.href}>
                 <item.icon />
                 <span>{item.label}</span>
-              </div>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
