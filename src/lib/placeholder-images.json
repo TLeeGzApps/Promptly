@@ -2,9 +2,15 @@
   "placeholderImages": [
     {
       "id": "hero-background",
-      "description": "A human hand and a robotic hand about to touch, representing the collaboration between humans and AI.",
-      "imageUrl": "https://storage.googleapis.com/project-spark-b9c99-app.appspot.com/generated/vs5nfrl8898s99fsvrqg_0.jpg",
-      "imageHint": "human robot"
+      "description": "A person working on a laptop in a modern, stylish room.",
+      "imageUrl": "https://ik.imagekit.io/ag5q0my3t/cash-macanaya-X9Cemmq4YjM-unsplash.jpg?updatedAt=1766529099245",
+      "imageHint": "desk laptop"
+    },
+    {
+      "id": "falcon",
+      "description": "A majestic falcon.",
+      "imageUrl": "https://ik.imagekit.io/ag5q0my3t/erasebg-transformed~3.png",
+      "imageHint": "falcon bird"
     }
   ]
 }
