@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -17,24 +16,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
-import { generateInitialPrompt } from '@/ai/flows/generate-initial-prompt';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { PromptAnalysis } from '@/components/prompt-analysis';
+import { paraphraseText, ParaphraseTextInput, ParaphraseTextInputSchema, ParaphraseTextOutput } from '@/ai/flows/paraphrase-text';
 
-const formSchema = z.object({
-  sourceText: z.string().min(10, 'Please enter at least 10 characters to paraphrase.'),
-  mode: z.enum(['Basic', 'Advanced', 'Complex']),
-  length: z.enum(['Shorter', 'Same', 'Expanded']),
-});
-
-type FormData = z.infer<typeof formSchema>;
+type FormData = ParaphraseTextInput;
 
 export default function ParaphrasePage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [paraphrasedText, setParaphrasedText] = React.useState('');
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(ParaphraseTextInputSchema),
     defaultValues: {
       sourceText: '',
       mode: 'Advanced',
@@ -46,21 +39,9 @@ export default function ParaphrasePage() {
     setIsLoading(true);
     setParaphrasedText('');
 
-    const description = `Paraphrase the following text.
-    - Mode: ${data.mode}
-    - Desired Length: ${data.length}
-    - Preserve the core meaning and tone.
-    
-    Original Text:
-    """
-    ${data.sourceText}
-    """
-    
-    Return ONLY the paraphrased text.`;
-
     try {
-      const result = await generateInitialPrompt({ description });
-      setParaphrasedText(result.prompt);
+      const result: ParaphraseTextOutput = await paraphraseText(data);
+      setParaphrasedText(result.paraphrasedText);
     } catch (error) {
       console.error('Error paraphrasing text:', error);
     } finally {

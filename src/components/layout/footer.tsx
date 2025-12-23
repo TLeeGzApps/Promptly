@@ -5,8 +5,8 @@ const footerSections = [
   {
     title: 'Product',
     links: [
-      { name: 'How It Works', href: '#' },
-      { name: 'Models Supported', href: '#' },
+      { name: 'How It Works', href: '/how-it-works' },
+      { name: 'Models Supported', href: '/models-supported' },
       { name: 'Prompt Templates', href: '/generate' },
       { name: 'Prompt Scoring', href: '#' },
       { name: 'Version History', href: '#' },
@@ -25,11 +25,11 @@ const footerSections = [
   {
     title: 'Legal',
     links: [
-      { name: 'Terms of Service', href: '#' },
-      { name: 'Privacy Policy', href: '#' },
-      { name: 'Cookie Policy', href: '#' },
-      { name: 'Acceptable Use Policy', href: '#' },
-      { name: 'Disclaimer', href: '#' },
+      { name: 'Terms of Service', href: '/legal/terms-of-service' },
+      { name: 'Privacy Policy', href: '/legal/privacy-policy' },
+      { name: 'Cookie Policy', href: '/legal/cookie-policy' },
+      { name: 'Acceptable Use Policy', href: '/legal/acceptable-use' },
+      { name: 'Disclaimer', href: '/legal/disclaimer' },
     ],
   },
 ];
@@ -61,8 +61,9 @@ export function Footer() {
                     <li><Link href="/generate" className="text-sm text-muted-foreground hover:text-foreground">Create Prompt</Link></li>
                     <li><Link href="/convert" className="text-sm text-muted-foreground hover:text-foreground">Convert Prompt</Link></li>
                     <li><Link href="/translate" className="text-sm text-muted-foreground hover:text-foreground">Translate Prompt</Link></li>
-                    <li><Link href="#" className="text-sm text-muted-foreground hover:text-foreground">Prompt Library</Link></li>
-                    <li><Link href="#" className="text-sm text-muted-foreground hover:text-foreground">Pricing</Link></li>
+                    <li><Link href="/paraphrase" className="text-sm text-muted-foreground hover:text-foreground">Paraphrase</Link></li>
+                    <li><Link href="/prompt-library" className="text-sm text-muted-foreground hover:text-foreground">Prompt Library</Link></li>
+                    <li><Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground">Pricing</Link></li>
                  </ul>
             </div>
             {footerSections.map((section) => (
