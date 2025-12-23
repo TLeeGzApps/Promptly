@@ -1,8 +1,12 @@
+"use client";
+
+import * as React from 'react';
 import { PageHeader } from '@/components/page-header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Copy } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const templates = [
   {
@@ -38,6 +42,16 @@ const templates = [
 ];
 
 export default function PromptLibraryPage() {
+  const { toast } = useToast();
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copied to Clipboard",
+      description: "The prompt template has been copied.",
+    });
+  };
+
   return (
     <>
       <PageHeader
@@ -56,14 +70,14 @@ export default function PromptLibraryPage() {
                   <p className="text-sm font-medium text-primary">{template.category}</p>
                   <CardTitle className="mt-1 font-headline">{template.title}</CardTitle>
                 </div>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" onClick={() => handleCopy(template.prompt)}>
                   <Copy className="h-4 w-4" />
                   <span className="sr-only">Copy</span>
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
-              <pre className="mt-2 rounded-md bg-background p-4 font-code text-sm text-foreground overflow-x-auto">
+              <pre className="mt-2 rounded-md bg-background p-4 font-code text-sm text-foreground overflow-x-auto whitespace-pre-wrap">
                 <code>{template.prompt}</code>
               </pre>
             </CardContent>

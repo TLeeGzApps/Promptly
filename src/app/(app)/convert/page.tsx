@@ -15,11 +15,12 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Copy, Check } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { PromptAnalysis } from '@/components/prompt-analysis';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { convertTextToPrompt } from '@/ai/flows/convert-text-to-prompt';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   intent: z.string().min(10, 'Please describe your intent in at least 10 characters.'),
@@ -31,6 +32,16 @@ type FormData = z.infer<typeof formSchema>;
 export default function ConvertPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [generatedPrompt, setGeneratedPrompt] = React.useState('');
+  const { toast } = useToast();
+
+  const handleCopy = () => {
+    if (!generatedPrompt) return;
+    navigator.clipboard.writeText(generatedPrompt);
+    toast({
+      title: "Copied to Clipboard",
+      description: "The converted prompt has been copied.",
+    });
+  };
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -52,6 +63,11 @@ export default function ConvertPage() {
       setGeneratedPrompt(result.structuredPrompt);
     } catch (error) {
       console.error('Error generating prompt:', error);
+      toast({
+        variant: "destructive",
+        title: "Conversion Failed",
+        description: "Could not convert your text to a prompt. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +138,15 @@ export default function ConvertPage() {
         <div className="space-y-8">
           <Card className="h-fit">
             <CardHeader>
-              <CardTitle className="font-headline">Converted Prompt</CardTitle>
+              <div className="flex items-start justify-between">
+                <CardTitle className="font-headline">Converted Prompt</CardTitle>
+                {generatedPrompt && (
+                  <Button variant="ghost" size="icon" onClick={handleCopy}>
+                    <Copy className="h-4 w-4" />
+                    <span className="sr-only">Copy</span>
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               {isLoading && (

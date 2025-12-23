@@ -14,17 +14,28 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Copy, Check } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { PromptAnalysis } from '@/components/prompt-analysis';
 import { paraphraseText, ParaphraseTextInput, ParaphraseTextInputSchema, ParaphraseTextOutput } from '@/ai/flows/paraphrase-text';
+import { useToast } from '@/hooks/use-toast';
 
 type FormData = ParaphraseTextInput;
 
 export default function ParaphrasePage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [paraphrasedText, setParaphrasedText] = React.useState('');
+  const { toast } = useToast();
+
+  const handleCopy = () => {
+    if (!paraphrasedText) return;
+    navigator.clipboard.writeText(paraphrasedText);
+    toast({
+      title: "Copied to Clipboard",
+      description: "The paraphrased text has been copied.",
+    });
+  };
 
   const form = useForm<FormData>({
     resolver: zodResolver(ParaphraseTextInputSchema),
@@ -44,6 +55,11 @@ export default function ParaphrasePage() {
       setParaphrasedText(result.paraphrasedText);
     } catch (error) {
       console.error('Error paraphrasing text:', error);
+      toast({
+        variant: "destructive",
+        title: "Paraphrase Failed",
+        description: "Could not paraphrase the text. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +173,15 @@ export default function ParaphrasePage() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline">Paraphrased Text</CardTitle>
+                <div className="flex items-start justify-between">
+                  <CardTitle className="font-headline">Paraphrased Text</CardTitle>
+                  {paraphrasedText && (
+                    <Button variant="ghost" size="icon" onClick={handleCopy}>
+                      <Copy className="h-4 w-4" />
+                      <span className="sr-only">Copy</span>
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {isLoading && (

@@ -25,10 +25,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Loader2, PlusCircle, Trash2 } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, Copy, Check } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { generateInitialPrompt } from '@/ai/flows/generate-initial-prompt';
 import { PromptAnalysis } from '@/components/prompt-analysis';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   goal: z.string().min(1, 'Goal is required.'),
@@ -41,6 +42,16 @@ type FormData = z.infer<typeof formSchema>;
 export default function GeneratePage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [generatedPrompt, setGeneratedPrompt] = React.useState('');
+  const { toast } = useToast();
+
+  const handleCopy = () => {
+    if (!generatedPrompt) return;
+    navigator.clipboard.writeText(generatedPrompt);
+    toast({
+      title: "Copied to Clipboard",
+      description: "The generated prompt has been copied.",
+    });
+  };
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -75,6 +86,11 @@ export default function GeneratePage() {
       setGeneratedPrompt(result.prompt);
     } catch (error) {
       console.error('Error generating prompt:', error);
+      toast({
+        variant: "destructive",
+        title: "Generation Failed",
+        description: "Could not generate a prompt. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -175,7 +191,15 @@ export default function GeneratePage() {
         <div className="space-y-8">
             <Card className="h-fit">
               <CardHeader>
-                <CardTitle className="font-headline">Generated Prompt</CardTitle>
+                <div className="flex items-start justify-between">
+                  <CardTitle className="font-headline">Generated Prompt</CardTitle>
+                  {generatedPrompt && (
+                    <Button variant="ghost" size="icon" onClick={handleCopy}>
+                      <Copy className="h-4 w-4" />
+                      <span className="sr-only">Copy</span>
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {isLoading && (

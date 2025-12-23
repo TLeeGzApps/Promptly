@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Copy, Check } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { translatePromptBetweenModels } from '@/ai/flows/translate-prompt-between-models';
 import {
@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { PromptAnalysis } from '@/components/prompt-analysis';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   sourcePrompt: z.string().min(10, 'Please enter a prompt to translate.'),
@@ -38,6 +39,16 @@ type FormData = z.infer<typeof formSchema>;
 export default function TranslatePage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [translatedPrompt, setTranslatedPrompt] = React.useState('');
+  const { toast } = useToast();
+
+  const handleCopy = () => {
+    if (!translatedPrompt) return;
+    navigator.clipboard.writeText(translatedPrompt);
+    toast({
+      title: "Copied to Clipboard",
+      description: "The translated prompt has been copied.",
+    });
+  };
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -61,6 +72,11 @@ export default function TranslatePage() {
       setTranslatedPrompt(result.translatedPrompt);
     } catch (error) {
       console.error('Error translating prompt:', error);
+      toast({
+        variant: "destructive",
+        title: "Translation Failed",
+        description: "Could not translate the prompt. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -158,7 +174,15 @@ export default function TranslatePage() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline">Translated Prompt</CardTitle>
+                <div className="flex items-start justify-between">
+                  <CardTitle className="font-headline">Translated Prompt</CardTitle>
+                  {translatedPrompt && (
+                    <Button variant="ghost" size="icon" onClick={handleCopy}>
+                      <Copy className="h-4 w-4" />
+                      <span className="sr-only">Copy</span>
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {isLoading && (
@@ -167,7 +191,7 @@ export default function TranslatePage() {
                   </div>
                 )}
                 {translatedPrompt && (
-                  <pre className="min-h-[250px] mt-2 rounded-md bg-background p-4 font-code text-sm text-foreground overflow-x-auto">
+                  <pre className="min-h-[250px] mt-2 rounded-md bg-background p-4 font-code text-sm text-foreground overflow-x-auto whitespace-pre-wrap">
                     <code>{translatedPrompt}</code>
                   </pre>
                 )}
