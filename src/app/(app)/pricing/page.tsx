@@ -1,12 +1,21 @@
+"use client";
+
+import * as React from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { loadStripe } from '@stripe/stripe-js';
+import { useAuth } from '@/contexts/auth-provider';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const tiers = [
   {
     name: 'Free',
     price: '$0',
+    priceId: '',
     description: 'For individuals exploring prompt engineering.',
     features: [
       'Basic Prompt Generation',
@@ -22,6 +31,7 @@ const tiers = [
   {
     name: 'Pro',
     price: '$15',
+    priceId: 'price_1Sh9iODttCUBZqsc7b0g7b1h', // Placeholder, replace with actual Price ID
     description: 'For power users who need advanced tools.',
     features: [
       'Unlimited Prompt Generation',
@@ -38,6 +48,7 @@ const tiers = [
   {
     name: 'Team',
     price: '$49',
+    priceId: 'price_1Sh9iODttCUBZqsc8c1h8c2i', // Placeholder, replace with actual Price ID
     description: 'For teams that collaborate on AI projects.',
     features: [
       'Everything in Pro',
@@ -50,9 +61,10 @@ const tiers = [
     cta: 'Contact Sales',
     popular: false,
   },
-    {
+  {
     name: 'Enterprise',
     price: 'Custom',
+    priceId: 'price_1Sh9iODttCUBZqsc9d2i9d3j', // Placeholder, replace with actual Price ID
     description: 'For large organizations with specific needs.',
     features: [
         'Everything in Team',
@@ -64,10 +76,66 @@ const tiers = [
     ],
     cta: 'Contact Sales',
     popular: false,
-    },
+  },
 ];
 
 export default function PricingPage() {
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const [loading, setLoading] = React.useState<string | null>(null);
+
+  const handleCheckout = async (priceId: string, tierName: string) => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Required",
+        description: "Please log in to subscribe.",
+      });
+      return;
+    }
+
+    if (tierName === 'Free' || tierName === 'Enterprise' || tierName === 'Team') {
+        // Handle free tier or contact sales
+        toast({
+            title: tierName === 'Free' ? "You're all set!" : "Contact Us",
+            description: tierName === 'Free' ? "You are on the Free plan." : "Please contact our sales team to get started with the Enterprise plan.",
+        });
+        return;
+    }
+
+    setLoading(priceId);
+
+    try {
+      const stripe = await stripePromise;
+      if (!stripe) throw new Error('Stripe.js failed to load.');
+
+      // This is a simplified client-side checkout.
+      // In a real app, you'd create a checkout session on your server
+      // and return the session ID to the client.
+      const { error } = await stripe.redirectToCheckout({
+        lineItems: [{ price: priceId, quantity: 1 }],
+        mode: 'subscription',
+        successUrl: `${window.location.origin}/generate?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: window.location.origin + '/pricing',
+        clientReferenceId: user.uid,
+      });
+
+      if (error) {
+        throw error;
+      }
+    } catch (error: any) {
+      console.error("Stripe checkout error:", error);
+      toast({
+        variant: "destructive",
+        title: "Checkout Failed",
+        description: error.message || "Could not proceed to checkout. Please try again.",
+      });
+    } finally {
+      setLoading(null);
+    }
+  };
+
+
   return (
     <>
       <PageHeader
@@ -96,7 +164,13 @@ export default function PricingPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" variant={tier.popular ? 'default' : 'outline'}>
+              <Button 
+                className="w-full" 
+                variant={tier.popular ? 'default' : 'outline'}
+                onClick={() => handleCheckout(tier.priceId, tier.name)}
+                disabled={loading === tier.priceId}
+              >
+                {loading === tier.priceId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 {tier.cta}
               </Button>
             </CardFooter>
