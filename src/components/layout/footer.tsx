@@ -18,8 +18,7 @@ const footerSections = [
     links: [
       { name: 'How It Works', href: '/how-it-works' },
       { name: 'Models Supported', href: '/models-supported' },
-      { name: 'Documentation', href: '#' },
-      { name: 'Support Center', href: '#' },
+      { name: 'Documentation', href: '/documentation' },
     ],
   },
   {
