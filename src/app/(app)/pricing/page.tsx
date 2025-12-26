@@ -16,17 +16,14 @@ import { useToast } from "@/hooks/use-toast";
 import { loadStripe } from "@stripe/stripe-js";
 import { useAuth } from "@/contexts/auth-provider";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const tiers = [
   {
     name: "Free",
     price: "$0",
     priceId: "price_1Shcs8HHPmnAKOCeMSVwrjWR",
-    description:
-      "Basic access for individuals exploring prompt generation and formatting.",
+    description: "Basic access for individuals exploring prompt generation and formatting.",
     features: [
       "Basic prompt generation",
       "Limited prompt conversion & formatting",
@@ -42,8 +39,7 @@ const tiers = [
     name: "Pro",
     price: "$5",
     priceId: "price_1Shcs9HHPmnAKOCePoCHmM9e",
-    description:
-      "For power users who need full prompt generation, conversion, and scoring.",
+    description: "For power users who need full prompt generation, conversion, and scoring.",
     features: [
       "Unlimited prompt generation",
       "Unlimited prompt conversion & formatting",
@@ -59,8 +55,7 @@ const tiers = [
     name: "Team",
     price: "$12",
     priceId: "price_1Shcs8HHPmnAKOCeVA9QZnUa",
-    description:
-      "For small teams collaborating across prompts and AI models.",
+    description: "For small teams collaborating across prompts and AI models.",
     features: [
       "Everything in Pro",
       "Shared team workspace",
@@ -76,8 +71,7 @@ const tiers = [
     name: "Enterprise",
     price: "$25",
     priceId: "price_1Shcs8HHPmnAKOCejasUMyOR",
-    description:
-      "For organizations requiring scale, security, and compliance.",
+    description: "For organizations requiring scale, security, and compliance.",
     features: [
       "Everything in Team",
       "Unlimited users",
@@ -106,7 +100,6 @@ export default function PricingPage() {
       return;
     }
 
-    // Free tier = no checkout
     if (tierName === "Free") {
       toast({
         title: "You're all set",
@@ -115,7 +108,6 @@ export default function PricingPage() {
       return;
     }
 
-    // Team & Enterprise = contact sales (for now)
     if (tierName === "Team" || tierName === "Enterprise") {
       toast({
         title: "Contact Sales",
@@ -124,7 +116,6 @@ export default function PricingPage() {
       return;
     }
 
-    // Pro checkout
     try {
       setLoading(priceId);
 
@@ -145,8 +136,7 @@ export default function PricingPage() {
       toast({
         variant: "destructive",
         title: "Checkout failed",
-        description:
-          err.message || "Unable to start checkout. Please try again.",
+        description: err.message || "Unable to start checkout. Please try again.",
       });
     } finally {
       setLoading(null);
@@ -157,27 +147,18 @@ export default function PricingPage() {
     <>
       <PageHeader
         title="Pricing Plans"
-        description="Choose the plan that's right for you."
+        description="Choose the plan that's right for you and your team."
       />
 
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
         {tiers.map((tier) => (
-          <Card
-            key={tier.name}
-            className={`flex flex-col ${
-              tier.popular ? "border-primary" : ""
-            }`}
-          >
+          <Card key={tier.name} className={`flex flex-col ${tier.popular ? "border-primary" : ""}`}>
             <CardHeader>
-              <CardTitle className="font-headline">
-                {tier.name}
-              </CardTitle>
+              <CardTitle className="font-headline">{tier.name}</CardTitle>
               <CardDescription>{tier.description}</CardDescription>
               <p className="pt-4">
                 <span className="text-3xl font-bold">{tier.price}</span>
-                {tier.price !== "$0" && (
-                  <span className="text-muted-foreground"> / month</span>
-                )}
+                {tier.price !== "$0" && <span className="text-muted-foreground"> / month</span>}
               </p>
             </CardHeader>
 
@@ -186,9 +167,7 @@ export default function PricingPage() {
                 {tier.features.map((feature) => (
                   <li key={feature} className="flex items-start">
                     <Check className="mr-2 mt-1 h-4 w-4 text-primary" />
-                    <span className="text-sm text-muted-foreground">
-                      {feature}
-                    </span>
+                    <span className="text-sm text-muted-foreground">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -198,91 +177,10 @@ export default function PricingPage() {
               <Button
                 className="w-full"
                 variant={tier.popular ? "default" : "outline"}
-                onClick={() =>
-                  handleCheckout(tier.priceId, tier.name)
-                }
-                disabled={loading === tier.priceId}
-              >
-                {loading === tier.priceId && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {tier.cta}
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-    </>
-  );
-}
-    setLoading(priceId);
-
-    try {
-      const stripe = await stripePromise;
-      if (!stripe) throw new Error('Stripe.js failed to load.');
-
-      // This is a simplified client-side checkout.
-      // In a real app, you'd create a checkout session on your server
-      // and return the session ID to the client.
-      const { error } = await stripe.redirectToCheckout({
-        lineItems: [{ price: priceId, quantity: 1 }],
-        mode: 'subscription',
-        successUrl: `${window.location.origin}/generate?session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: window.location.origin + '/pricing',
-        clientReferenceId: user.uid,
-      });
-
-      if (error) {
-        throw error;
-      }
-    } catch (error: any) {
-      console.error("Stripe checkout error:", error);
-      toast({
-        variant: "destructive",
-        title: "Checkout Failed",
-        description: error.message || "Could not proceed to checkout. Please try again.",
-      });
-    } finally {
-      setLoading(null);
-    }
-  };
-
-
-  return (
-    <>
-      <PageHeader
-        title="Pricing Plans"
-        description="Choose the plan that's right for you and your team."
-      />
-      <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-        {tiers.map((tier) => (
-          <Card key={tier.name} className={`flex flex-col ${tier.popular ? 'border-primary' : ''}`}>
-            <CardHeader>
-              <CardTitle className='font-headline'>{tier.name}</CardTitle>
-              <CardDescription>{tier.description}</CardDescription>
-              <p className="pt-4">
-                <span className="text-3xl font-bold">{tier.price}</span>
-                {tier.price !== 'Custom' && tier.price !== '$0' && <span className="text-muted-foreground">/month</span>}
-              </p>
-            </CardHeader>
-            <CardContent className="flex-1">
-              <ul className="space-y-4">
-                {tier.features.map((feature) => (
-                  <li key={feature} className="flex items-start">
-                    <Check className="mr-2 mt-1 h-4 w-4 flex-shrink-0 text-primary" />
-                    <span className="text-sm text-muted-foreground">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-            <CardFooter>
-              <Button 
-                className="w-full" 
-                variant={tier.popular ? 'default' : 'outline'}
                 onClick={() => handleCheckout(tier.priceId, tier.name)}
                 disabled={loading === tier.priceId}
               >
-                {loading === tier.priceId ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                {loading === tier.priceId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {tier.cta}
               </Button>
             </CardFooter>
