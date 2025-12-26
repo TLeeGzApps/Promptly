@@ -11,10 +11,9 @@ export default function AppLayout({
 }) {
   return (
     <SidebarProvider defaultOpen={false}>
-      <Sidebar collapsible="icon">
+      <Sidebar collapsible="offcanvas">
         <SidebarHeader />
         <SidebarNav />
-        <SidebarRail />
       </Sidebar>
       <SidebarInset>
         <MainHeader />
